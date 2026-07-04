@@ -22,6 +22,10 @@ def calculator_repl():
         # Initialize the Calculator instance
         calc = Calculator()
 
+        # Register observers for logging and auto-saving history
+        calc.add_observer(LoggingObserver())
+        calc.add_observer(AutoSaveObserver(calc))
+
         print("Calculator started. Type 'help' for commands.")
 
         while True:
@@ -32,21 +36,36 @@ def calculator_repl():
                 if command == 'help':
                     # Display available commands
                     print("\nAvailable commands:")
-                    print("  add, subtract, multiply, divide - Perform calculations")
+                    print("  add, subtract, multiply, divide, power, root - Perform calculations")
+                    print("  history - Show calculation history")
                     print("  clear - Clear calculation history")
+                    print("  undo - Undo the last calculation")
+                    print("  redo - Redo the last undone calculation")
+                    print("  save - Save calculation history to file")
+                    print("  load - Load calculation history from file")
                     print("  exit - Exit the calculator")
                     continue
 
                 if command == 'exit':
-                    '''# Attempt to save history before exiting
+                    # Attempt to save history before exiting
                     try:
                         calc.save_history()
                         print("History saved successfully.")
                     except Exception as e:
                         print(f"Warning: Could not save history: {e}")
-                    '''
                     print("Goodbye!")
                     break
+
+                if command == 'history':
+                    # Display calculation history
+                    history = calc.show_history()
+                    if not history:
+                        print("No calculations in history")
+                    else:
+                        print("\nCalculation History:")
+                        for i, entry in enumerate(history, 1):
+                            print(f"{i}. {entry}")
+                    continue
 
                 if command == 'clear':
                     # Clear calculation history
@@ -54,7 +73,41 @@ def calculator_repl():
                     print("History cleared")
                     continue
 
-                if command in ['add', 'subtract', 'multiply', 'divide']:
+                if command == 'undo':
+                    # Undo the last calculation
+                    if calc.undo():
+                        print("Operation undone")
+                    else:
+                        print("Nothing to undo")
+                    continue
+
+                if command == 'redo':
+                    # Redo the last undone calculation
+                    if calc.redo():
+                        print("Operation redone")
+                    else:
+                        print("Nothing to redo")
+                    continue
+
+                if command == 'save':
+                    # Save calculation history to file
+                    try:
+                        calc.save_history()
+                        print("History saved successfully")
+                    except Exception as e:
+                        print(f"Error saving history: {e}")
+                    continue
+
+                if command == 'load':
+                    # Load calculation history from file
+                    try:
+                        calc.load_history()
+                        print("History loaded successfully")
+                    except Exception as e:
+                        print(f"Error loading history: {e}")
+                    continue
+
+                if command in ['add', 'subtract', 'multiply', 'divide', 'power', 'root']:
                     # Perform the specified arithmetic operation
                     try:
                         print("\nEnter numbers (or 'cancel' to abort):")
