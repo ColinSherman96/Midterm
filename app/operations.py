@@ -99,6 +99,105 @@ class Division(Operation):
 
     def _execute(self, a, b):
         return a / b
+    
+
+class Power(Operation):
+    """
+    Power (exponentiation) operation implementation.
+
+
+    Raises one number to the power of another.
+    """
+
+
+    def validate_operands(self, a: Decimal, b: Decimal) -> None:
+        """
+        Validate operands for power operation.
+
+
+        Overrides the base class method to ensure that the exponent is not negative.
+
+
+        Args:
+            a (Decimal): Base number.
+            b (Decimal): Exponent.
+
+
+        Raises:
+            OperationError: If the exponent is negative.
+        """
+        super().validate_operands(a, b)
+        if b < 0:
+            raise OperationError("Negative exponents not supported")
+
+
+    def _execute(self, a: Decimal, b: Decimal) -> Decimal:
+        """
+        Calculate one number raised to the power of another.
+
+
+        Args:
+            a (Decimal): Base number.
+            b (Decimal): Exponent.
+
+
+        Returns:
+            Decimal: Result of the exponentiation.
+        """
+        self.validate_operands(a, b)
+        return Decimal(pow(float(a), float(b)))
+
+
+
+
+class Root(Operation):
+    """
+    Root operation implementation.
+
+
+    Calculates the nth root of a number.
+    """
+
+
+    def validate_operands(self, a: Decimal, b: Decimal) -> None:
+        """
+        Validate operands for root operation.
+
+
+        Overrides the base class method to ensure that the number is non-negative
+        and the root degree is not zero.
+
+
+        Args:
+            a (Decimal): Number from which the root is taken.
+            b (Decimal): Degree of the root.
+
+
+        Raises:
+            OperationError: If the number is negative or the root degree is zero.
+        """
+        super().validate_operands(a, b)
+        if a < 0:
+            raise OperationError("Cannot calculate root of negative number")
+        if b == 0:
+            raise OperationError("Zero root is undefined")
+
+
+    def _execute(self, a: Decimal, b: Decimal) -> Decimal:
+        """
+        Calculate the nth root of a number.
+
+
+        Args:
+            a (Decimal): Number from which the root is taken.
+            b (Decimal): Degree of the root.
+
+
+        Returns:
+            Decimal: Result of the root calculation.
+        """
+        self.validate_operands(a, b)
+        return Decimal(pow(float(a), 1 / float(b)))
 
 class OperationFactory:
     """
