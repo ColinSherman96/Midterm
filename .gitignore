@@ -1,1 +1,6 @@
 venv/
+.coverage
+app/__pycache__/
+history/
+logs/
+tests/__pycache__/
