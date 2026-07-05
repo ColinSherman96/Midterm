@@ -5,14 +5,24 @@ from abc import ABC, abstractmethod
 from decimal import Decimal, InvalidOperation
 from typing import Dict
 from app.exceptions import OperationError
+from app.logger import Logger
+
+logger = Logger.get_logger()
+logger.info("Logger initialized")
 
 class Operation(ABC):
 
     def execute(self, a: Decimal, b: Decimal) -> Decimal:
         try:
             self.validate_operands(a, b)
-            return self._execute(a, b)
+            result = self._execute(a, b)
+            print("About to log")
+            logger.info("%s: %s, %s -> %s", self, a, b, result)
+            print("logged successfully")
+            return result
+        
         except Exception as e:
+            logger.error("%s failed: %s", self, e)
             raise OperationError(f"Calculation failed: {str(e)}")
     
 
@@ -146,9 +156,6 @@ class Power(Operation):
         """
         self.validate_operands(a, b)
         return Decimal(pow(float(a), float(b)))
-
-
-
 
 class Root(Operation):
     """
