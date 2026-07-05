@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, MagicMock, patch
 from app.calculation import Calculation
 from app.history import LoggingObserver, AutoSaveObserver
 from app.calculator import Calculator
@@ -14,12 +14,20 @@ calculation_mock.result = 8
 
 # Test cases for LoggingObserver
 
-@patch('logging.info')
-def test_logging_observer_logs_calculation(logging_info_mock):
+@patch('app.logger.Logger.get_logger')
+def test_logging_observer_logs_calculation(mock_get_logger):
+    mock_logger = Mock()
+    mock_get_logger.return_value = mock_logger
+
     observer = LoggingObserver()
     observer.update(calculation_mock)
-    logging_info_mock.assert_called_once_with(
-        "Calculation performed: addition (5, 3) = 8"
+
+    mock_logger.info.assert_called_once_with(
+        "Calculation performed: %s (%s, %s) = %s",
+        "addition",
+        5,
+        3,
+        8
     )
 
 def test_logging_observer_no_calculation():

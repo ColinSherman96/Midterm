@@ -13,17 +13,8 @@ logger.info("Logger initialized")
 class Operation(ABC):
 
     def execute(self, a: Decimal, b: Decimal) -> Decimal:
-        try:
-            self.validate_operands(a, b)
-            result = self._execute(a, b)
-            print("About to log")
-            logger.info("%s: %s, %s -> %s", self, a, b, result)
-            print("logged successfully")
-            return result
-        
-        except Exception as e:
-            logger.error("%s failed: %s", self, e)
-            raise OperationError(f"Calculation failed: {str(e)}")
+        self.validate_operands(a, b)
+        return self._execute(a, b)
     
 
     @abstractmethod

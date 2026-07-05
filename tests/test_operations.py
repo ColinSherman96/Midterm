@@ -241,5 +241,5 @@ def test_division_by_zero_triggers_exception():
     with pytest.raises(OperationError) as excinfo:
         division_op.execute(Decimal('1'), Decimal('0'))
     
-    # Verify the exception message contains "Calculation failed:"
-    assert "Calculation failed:" in str(excinfo.value)
+    # Verify the exception message contains "Division by zero is not allowed"
+    assert "Division by zero is not allowed" in str(excinfo.value)
