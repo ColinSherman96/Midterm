@@ -36,3 +36,56 @@ def test_logging_observer_no_calculation():
         observer.update(None)  # Passing None should raise an exception as there's no calculation
 
 # Test cases for AutoSaveObserver
+
+def test_autosave_observer_triggers_save():
+    calculator_mock = Mock(spec=Calculator)
+    calculator_mock.config = Mock(spec=CalculatorConfig)
+    calculator_mock.config.auto_save = True
+    observer = AutoSaveObserver(calculator_mock)
+   
+    observer.update(calculation_mock)
+    calculator_mock.save_history.assert_called_once()
+
+
+@patch('app.logger.Logger.get_logger')
+def test_autosave_observer_logs_autosave(mock_get_logger):
+    mock_logger = Mock()
+    mock_get_logger.return_value = mock_logger
+
+    calculator_mock = Mock(spec=Calculator)
+    calculator_mock.config = Mock(spec=CalculatorConfig)
+    calculator_mock.config.auto_save = True
+
+    observer = AutoSaveObserver(calculator_mock)
+    observer.update(calculation_mock)
+
+    mock_logger.info.assert_called_once_with("History auto-saved")
+
+
+def test_autosave_observer_does_not_trigger_save_when_disabled():
+    calculator_mock = Mock(spec=Calculator)
+    calculator_mock.config = Mock(spec=CalculatorConfig)
+    calculator_mock.config.auto_save = False
+    observer = AutoSaveObserver(calculator_mock)
+   
+    observer.update(calculation_mock)
+    calculator_mock.save_history.assert_not_called()
+
+
+# Additional negative test cases for AutoSaveObserver
+
+
+def test_autosave_observer_invalid_calculator():
+    with pytest.raises(TypeError):
+        AutoSaveObserver(None)  # Passing None should raise a TypeError
+
+
+def test_autosave_observer_no_calculation():
+    calculator_mock = Mock(spec=Calculator)
+    calculator_mock.config = Mock(spec=CalculatorConfig)
+    calculator_mock.config.auto_save = True
+    observer = AutoSaveObserver(calculator_mock)
+   
+    with pytest.raises(AttributeError):
+        observer.update(None)  # Passing None should raise an exception
+
