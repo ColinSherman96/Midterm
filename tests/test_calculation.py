@@ -1,53 +1,36 @@
 import pytest
 from decimal import Decimal
 from datetime import datetime
-from app.calculation import Calculation
-from app.exceptions import OperationError
 import logging
 
-def test_addition():
-    calc = Calculation(operation="Addition", operand1=Decimal("2"), operand2=Decimal("3"))
+from app.calculation import Calculation
+from app.exceptions import OperationError
+
+
+def test_calculation_creation():
+    calc = Calculation(
+        operation="Addition",
+        operand1=Decimal("2"),
+        operand2=Decimal("3"),
+        result=Decimal("5")
+    )
+
+    assert calc.operation == "Addition"
+    assert calc.operand1 == Decimal("2")
+    assert calc.operand2 == Decimal("3")
     assert calc.result == Decimal("5")
 
-def test_subtraction():
-    calc = Calculation(operation="Subtraction", operand1=Decimal("5"), operand2=Decimal("3"))
-    assert calc.result == Decimal("2")
-
-def test_multiplication():
-    calc = Calculation(operation="Multiplication", operand1=Decimal("4"), operand2=Decimal("2"))
-    assert calc.result == Decimal("8")
-
-def test_division():
-    calc = Calculation(operation="Division", operand1=Decimal("8"), operand2=Decimal("2"))
-    assert calc.result == Decimal("4")
-
-def test_division_by_zero():
-    with pytest.raises(OperationError, match="Division by zero is not allowed"):
-        Calculation(operation="Division", operand1=Decimal("8"), operand2=Decimal("0"))
-
-def test_power():
-    calc = Calculation(operation="Power", operand1=Decimal("2"), operand2=Decimal("3"))
-    assert calc.result == Decimal("8")
-
-def test_negative_power():
-    with pytest.raises(OperationError, match="Negative exponents are not supported"):
-        Calculation(operation="Power", operand1=Decimal("2"), operand2=Decimal("-3"))
-
-def test_root():
-    calc = Calculation(operation="Root", operand1=Decimal("16"), operand2=Decimal("2"))
-    assert calc.result == Decimal("4")
-
-def test_invalid_root():
-    with pytest.raises(OperationError, match="Cannot calculate root of negative number"):
-        Calculation(operation="Root", operand1=Decimal("-16"), operand2=Decimal("2"))
-
-def test_unknown_operation():
-    with pytest.raises(OperationError, match="Unknown operation"):
-        Calculation(operation="Unknown", operand1=Decimal("5"), operand2=Decimal("3"))
 
 def test_to_dict():
-    calc = Calculation(operation="Addition", operand1=Decimal("2"), operand2=Decimal("3"))
+    calc = Calculation(
+        operation="Addition",
+        operand1=Decimal("2"),
+        operand2=Decimal("3"),
+        result=Decimal("5")
+    )
+
     result_dict = calc.to_dict()
+
     assert result_dict == {
         "operation": "Addition",
         "operand1": "2",
@@ -55,6 +38,7 @@ def test_to_dict():
         "result": "5",
         "timestamp": calc.timestamp.isoformat()
     }
+
 
 def test_from_dict():
     data = {
@@ -64,13 +48,14 @@ def test_from_dict():
         "result": "5",
         "timestamp": datetime.now().isoformat()
     }
+
     calc = Calculation.from_dict(data)
+
     assert calc.operation == "Addition"
     assert calc.operand1 == Decimal("2")
     assert calc.operand2 == Decimal("3")
     assert calc.result == Decimal("5")
 
-# --- Fixed tests for exception cases during instantiation ---
 
 def test_from_dict_result_mismatch(caplog):
     data = {
@@ -80,12 +65,13 @@ def test_from_dict_result_mismatch(caplog):
         "result": "10",
         "timestamp": datetime.now().isoformat()
     }
+
     with caplog.at_level(logging.WARNING):
         Calculation.from_dict(data)
-    # Check what is actually logged
-    print("Logged messages:", caplog.text)
-    # For now, just check that no logs are present (to test if logging happens at all)
+
+    # Currently your code intentionally does not log mismatches
     assert caplog.text == ""
+
 
 def test_invalid_from_dict():
     data = {
@@ -95,27 +81,54 @@ def test_invalid_from_dict():
         "result": "5",
         "timestamp": datetime.now().isoformat()
     }
+
     with pytest.raises(OperationError, match="Invalid calculation data"):
         Calculation.from_dict(data)
 
+
 def test_invalid_operand_raises():
     with pytest.raises(OperationError, match="Invalid operand"):
-        Calculation(operation="Addition", operand1="invalid", operand2=Decimal("3"))
+        Calculation(
+            operation="Addition",
+            operand1="invalid",
+            operand2=Decimal("3"),
+            result=Decimal("0")
+        )
 
-def test_unknown_operation_raises():
-    with pytest.raises(OperationError, match="Unknown operation: FooBar"):
-        Calculation(operation="FooBar", operand1=Decimal("2"), operand2=Decimal("3"))
-
-# Additional tests for coverage
 
 def test_format_result():
-    calc = Calculation(operation="Division", operand1=Decimal("1"), operand2=Decimal("3"))
+    calc = Calculation(
+        operation="Division",
+        operand1=Decimal("1"),
+        operand2=Decimal("3"),
+        result=Decimal("0.333333333333333333")
+    )
+
     assert calc.format_result(precision=2) == "0.33"
     assert calc.format_result(precision=10) == "0.3333333333"
 
+
 def test_equality():
-    calc1 = Calculation(operation="Addition", operand1=Decimal("2"), operand2=Decimal("3"))
-    calc2 = Calculation(operation="Addition", operand1=Decimal("2"), operand2=Decimal("3"))
-    calc3 = Calculation(operation="Subtraction", operand1=Decimal("5"), operand2=Decimal("3"))
+    calc1 = Calculation(
+        operation="Addition",
+        operand1=Decimal("2"),
+        operand2=Decimal("3"),
+        result=Decimal("5")
+    )
+
+    calc2 = Calculation(
+        operation="Addition",
+        operand1=Decimal("2"),
+        operand2=Decimal("3"),
+        result=Decimal("5")
+    )
+
+    calc3 = Calculation(
+        operation="Subtraction",
+        operand1=Decimal("5"),
+        operand2=Decimal("3"),
+        result=Decimal("2")
+    )
+
     assert calc1 == calc2
     assert calc1 != calc3

@@ -3,7 +3,6 @@ from decimal import Decimal
 from typing import Any, Dict, Type
 
 from app.exceptions import OperationError
-from app.operations import OperationFactory
 from app.operations import(
     Operation,
     Addition,
@@ -12,6 +11,10 @@ from app.operations import(
     Division,
     Power,
     Root,
+    Modulus,
+    IntegerDivision,
+    Percentage,
+    AbsoluteDifference,
     OperationFactory
 )
 import operator
@@ -185,6 +188,112 @@ class TestRoot(BaseOperationTest):
         },
     }
 
+class TestModulus(BaseOperationTest):
+    """Test Modulus operation."""
+
+    operation_class = Modulus
+
+    valid_test_cases = {
+        "normal_modulus": {
+            "a": "10",
+            "b": "3",
+            "expected": "1"
+        },
+        "even_division": {
+            "a": "10",
+            "b": "5",
+            "expected": "0"
+        }
+    }
+
+    invalid_test_cases = {
+        "division_by_zero": {
+            "a": "10",
+            "b": "0",
+            "error": OperationError,
+            "message": "Modulus by zero is not allowed"
+        }
+    }
+
+class TestIntegerDivision(BaseOperationTest):
+    """Test Integer Division operation."""
+
+    operation_class = IntegerDivision
+
+    valid_test_cases = {
+        "discard_fraction": {
+            "a": "10",
+            "b": "3",
+            "expected": "3"
+        },
+        "exact_division": {
+            "a": "10",
+            "b": "5",
+            "expected": "2"
+        }
+    }
+
+    invalid_test_cases = {
+        "division_by_zero": {
+            "a": "10",
+            "b": "0",
+            "error": OperationError,
+            "message": "Integer division by zero is not allowed"
+        }
+    }
+
+class TestPercentage(BaseOperationTest):
+    """Test Percentage operation."""
+
+    operation_class = Percentage
+
+    valid_test_cases = {
+        "half": {
+            "a": "50",
+            "b": "100",
+            "expected": "50"
+        },
+        "quarter": {
+            "a": "25",
+            "b": "100",
+            "expected": "25"
+        }
+    }
+
+    invalid_test_cases = {
+        "zero_reference": {
+            "a": "50",
+            "b": "0",
+            "error": OperationError,
+            "message": "Percentage division by zero is not allowed"
+        }
+    }
+
+class TestAbsoluteDifference(BaseOperationTest):
+    """Test Absolute Difference operation."""
+
+    operation_class = AbsoluteDifference
+
+    valid_test_cases = {
+        "positive_difference": {
+            "a": "10",
+            "b": "5",
+            "expected": "5"
+        },
+        "negative_difference": {
+            "a": "5",
+            "b": "10",
+            "expected": "5"
+        },
+        "same_values": {
+            "a": "5",
+            "b": "5",
+            "expected": "0"
+        }
+    }
+
+    invalid_test_cases = {}
+
 class TestOperationFactory:
     """Test OperationFactory functionality."""
 
@@ -195,6 +304,12 @@ class TestOperationFactory:
             'subtract': Subtraction,
             'multiply': Multiplication,
             'divide': Division,
+            'power': Power,
+            'root': Root,
+            'modulus': Modulus,
+            'int_divide': IntegerDivision,
+            'percent': Percentage,
+            'abs_diff': AbsoluteDifference
         }
 
         for op_name, op_class in operation_map.items():
