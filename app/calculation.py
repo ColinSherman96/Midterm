@@ -28,7 +28,7 @@ class Calculation:
     operand2: Decimal       # The second operand in the calculation
 
     # Fields with default values
-    result: Decimal = field(init=False)  # The result of the calculation, computed post-initialization
+    result: Decimal = None # The result of the calculation, computed post-initialization
     timestamp: datetime.datetime = field(default_factory=datetime.datetime.now)  # Time when the calculation was performed
 
     def __post_init__(self):
@@ -39,7 +39,6 @@ class Calculation:
         instance is created.
         """
         self.validate_operands()
-        self.result = self.calculate()
 
     def validate_operands(self):
         try:
@@ -47,9 +46,11 @@ class Calculation:
             self.operand2 = Decimal(self.operand2)
         except Exception:
             raise OperationError("Invalid operand")
-        
+    '''    
     def calculate(self) -> Decimal:
         """
+        Commenting out calculate due to reduncancy
+        
         Execute calculation using the specified operation.
 
         Utilizes a dictionary to map operation names to their corresponding
@@ -74,8 +75,9 @@ class Calculation:
                  if x >= 0 and y != 0 
                 else self._raise_invalid_root(x, y)
     )
+      
 }
-
+        
         # Retrieve the operation function based on the operation name
         op = operations.get(self.operation)
         if not op:
@@ -87,7 +89,7 @@ class Calculation:
         except (InvalidOperation, ValueError, ArithmeticError) as e:
             # Handle any errors that occur during calculation
             raise OperationError(f"Calculation failed: {str(e)}")
-
+'''
     @staticmethod
     def _raise_div_zero():  # pragma: no cover
         """
@@ -164,7 +166,8 @@ class Calculation:
             calc = Calculation(
                 operation=data['operation'],
                 operand1=Decimal(data['operand1']),
-                operand2=Decimal(data['operand2'])
+                operand2=Decimal(data['operand2']),
+                result=Decimal(data['result'])
             )
 
             # Set the timestamp from the saved data

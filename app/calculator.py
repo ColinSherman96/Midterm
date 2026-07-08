@@ -201,8 +201,10 @@ class Calculator:
             calculation = Calculation(
                 operation=str(self.operation_strategy),
                 operand1=validated_a,
-                operand2=validated_b
+                operand2=validated_b,
+                result=result
             )
+
 
             calculation.result = calculation.result.quantize(
                  Decimal("0." + "0" * self.config.precision)
