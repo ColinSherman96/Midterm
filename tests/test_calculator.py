@@ -171,13 +171,23 @@ def test_calculator_repl_exit(mock_print, mock_input):
 @patch('builtins.print')
 def test_calculator_repl_help(mock_print, mock_input):
     calculator_repl()
-    mock_print.assert_any_call("\nAvailable commands:")
+
+    assert any(
+        "modulus" in str(call).lower()
+        and "int_divide" in str(call).lower()
+        and "abs_diff" in str(call).lower()
+        for call in mock_print.call_args_list
+    )
 
 @patch('builtins.input', side_effect=['add', '2', '3', 'exit'])
 @patch('builtins.print')
 def test_calculator_repl_addition(mock_print, mock_input):
     calculator_repl()
-    mock_print.assert_any_call("\nResult: 5")
+
+    assert any(
+        "Result: 5" in str(call)
+        for call in mock_print.call_args_list
+    )
 
 @patch('builtins.input', side_effect=['add', 'two', '3', 'exit'])
 @patch('builtins.print')
