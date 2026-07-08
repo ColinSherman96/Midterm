@@ -159,18 +159,31 @@ class CalculatorConfig:
         )).resolve()
 
     def validate(self) -> None:
-        """
-        Validate configuration settings.
 
-        Ensures that all configuration parameters meet the required criteria.
-        Raises ConfigurationError if any validation fails.
-
-        Raises:
-            ConfigurationError: If any configuration parameter is invalid.
-        """
         if self.max_history_size <= 0:
-            raise ConfigurationError("max_history_size must be positive")
+            raise ConfigurationError(
+            "max_history_size must be positive"
+        )
+
         if self.precision <= 0:
-            raise ConfigurationError("precision must be positive")
+         raise ConfigurationError(
+            "precision must be positive"
+        )
+
         if self.max_input_value <= 0:
-            raise ConfigurationError("max_input_value must be positive")
+            raise ConfigurationError(
+            "max_input_value must be positive"
+        )
+
+        if self.default_encoding.strip() == "":
+            raise ConfigurationError(
+            "default_encoding cannot be empty"
+        )
+
+        if not isinstance(self.auto_save, bool):
+            raise ConfigurationError(
+            "auto_save must be a boolean"
+        )
+
+        self.log_dir.mkdir(parents=True, exist_ok=True)
+        self.history_dir.mkdir(parents=True, exist_ok=True)

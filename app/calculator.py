@@ -204,6 +204,10 @@ class Calculator:
                 operand2=validated_b
             )
 
+            calculation.result = calculation.result.quantize(
+                 Decimal("0." + "0" * self.config.precision)
+            )
+
             # Save the current state to the undo stack before making changes
             self.undo_stack.append(CalculatorMemento(self.history.copy()))
 
@@ -220,7 +224,7 @@ class Calculator:
             # Notify all observers about the new calculation
             self.notify_observers(calculation)
 
-            return result
+            return calculation.result
 
         except OperationError as e:
             # Log and re-raise validation errors
@@ -259,12 +263,16 @@ class Calculator:
                 # Create a pandas DataFrame from the history data
                 df = pd.DataFrame(history_data)
                 # Write the DataFrame to a CSV file without the index
-                df.to_csv(self.config.history_file, index=False)
+                df.to_csv(
+                     self.config.history_file,
+                     index=False,
+                    encoding=self.config.default_encoding
+                )
                 logging.info(f"History saved successfully to {self.config.history_file}")
             else:
                 # If history is empty, create an empty CSV with headers
                 pd.DataFrame(columns=['operation', 'operand1', 'operand2', 'result', 'timestamp']
-                           ).to_csv(self.config.history_file, index=False)
+                           ).to_csv(self.config.history_file, index=False, encoding=self.config.default_encoding)
                 logging.info("Empty history saved")
 
         except Exception as e:
@@ -373,7 +381,8 @@ class Calculator:
         self.redo_stack.append(CalculatorMemento(self.history.copy()))
         # Restore the history from the memento
         self.history = memento.history.copy()
-        self.save_history() # Save the updated history to file
+        if self.config.auto_save:
+            self.save_history()
         return True
 
     def redo(self) -> bool:
@@ -393,5 +402,6 @@ class Calculator:
         self.undo_stack.append(CalculatorMemento(self.history.copy()))
         # Restore the history from the memento
         self.history = memento.history.copy()
-        self.save_history() # Save the restored history to file
+        if self.config.auto_save:
+            self.save_history()
         return True
