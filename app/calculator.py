@@ -373,6 +373,7 @@ class Calculator:
         self.redo_stack.append(CalculatorMemento(self.history.copy()))
         # Restore the history from the memento
         self.history = memento.history.copy()
+        self.save_history() # Save the updated history to file
         return True
 
     def redo(self) -> bool:
@@ -392,4 +393,5 @@ class Calculator:
         self.undo_stack.append(CalculatorMemento(self.history.copy()))
         # Restore the history from the memento
         self.history = memento.history.copy()
+        self.save_history() # Save the restored history to file
         return True
