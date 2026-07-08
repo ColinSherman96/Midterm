@@ -313,7 +313,7 @@ CALCULATOR_MAX_HISTORY_SIZE=1000
 
 # 👤 Author
 
-CColin Sherman
+Colin Sherman
 
 Midterm Project Submission  
 IS601 - NJIT  
